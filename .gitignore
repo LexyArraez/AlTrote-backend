@@ -1,0 +1,40 @@
+GNORE
+# ===== Variables de entorno=====
+.env
+.env.local
+.env.*.local
+*.pem
+secrets.json
+
+# ===== Python / FastAPI (backend) =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.idea/
+
+
+# ===== Base de datos =====
+*.db
+*.sqlite3
+*.sqlite3-journal
+
+# ===== Imagenes subidas por usuarios (evidencias de tareas) =====
+uploads/
+media/
+static/uploads/
