@@ -38,3 +38,6 @@ htmlcov/
 uploads/
 media/
 static/uploads/
+
+# ===== Migraciones generadas (si usas Alembic, deja versions/ pero ignora esto) =====
+alembic.ini
