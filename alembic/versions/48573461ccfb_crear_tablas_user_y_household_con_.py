@@ -1,8 +1,8 @@
-"""crear tablas user y household
+"""crear tablas user y household con sistema de niveles
 
-Revision ID: b81625a3ea32
-Revises: 
-Create Date: 2026-07-08 01:53:45.916046
+Revision ID: 48573461ccfb
+Revises:
+Create Date: 2026-07-08 16:47:18.909175
 
 """
 from typing import Sequence, Union
@@ -12,13 +12,13 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b81625a3ea32'
+revision: str = '48573461ccfb'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
-
+    """Upgrade schema."""
     op.create_table('household',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
@@ -35,8 +35,12 @@ def upgrade() -> None:
     sa.Column('hashed_password', sa.String(length=255), nullable=False),
     sa.Column('full_name', sa.String(length=100), nullable=False),
     sa.Column('role', sa.Enum('PADRE', 'HIJO', name='user_role'), nullable=False),
-    sa.Column('household_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('household_id', sa.Integer(), nullable=True),
+    sa.Column('completed_tasks', sa.Integer(), server_default='0', nullable=False),
+    sa.Column('level', sa.Integer(), server_default='1', nullable=False),
+    sa.Column('tasks_toward_level', sa.Integer(), server_default='0', nullable=False),
+    sa.Column('points_balance', sa.Integer(), server_default='0', nullable=False),
     sa.ForeignKeyConstraint(['household_id'], ['household.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -48,9 +52,8 @@ def upgrade() -> None:
     # ### end Alembic commands ###
 
 
-
 def downgrade() -> None:
-
+    """Downgrade schema."""
     op.drop_constraint('fk_household_owner_id', 'household', type_='foreignkey')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
