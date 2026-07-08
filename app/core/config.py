@@ -6,10 +6,8 @@ class Settings(BaseSettings):
     app_description: str
     database_url: str
 
-    # JWT
-    secret_key: str
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 60 * 24  # 24 horas
+    # Firebase (autenticacion)
+    firebase_credentials_path: str = "firebase_credentials.json"
 
     # Almacenamiento de imagenes
     upload_dir: str = "uploads"
