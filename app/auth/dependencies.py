@@ -20,7 +20,7 @@ def get_current_user(
     payload = verify_firebase_token(credentials.credentials)
     firebase_uid = payload["uid"]
 
-    user = db.query(User).filter(User.firebase_uid == firebase_uid).first()
+    user = db.query(User).filter(User.firebase_id == firebase_uid).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

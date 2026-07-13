@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-
 from app.models.enums import UserRole
 
 
@@ -18,6 +17,16 @@ class UserResponse(BaseModel):
     household_id: int | None
     level: int
     points_balance: int
+
+class Config:
+    from_attributes = True
+
+
+class HouseholdResponse(BaseModel):
+    id: int
+    name: str
+    invite_code: str
+    children: list[UserResponse]
 
     class Config:
         from_attributes = True

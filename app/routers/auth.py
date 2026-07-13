@@ -30,7 +30,7 @@ def register(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Este usuario ya esta registrado")
 
     user = User(
-        firebase_uid=firebase_id,
+        firebase_id=firebase_id,
         email=email,
         full_name=data.full_name,
         role=data.role,
