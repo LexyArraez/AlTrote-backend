@@ -22,15 +22,11 @@ def client():
     yield TestClient(app, headers={"Authorization": "Bearer fake-token"})
     app.dependency_overrides.clear()
 
-
 def fake_auth(uid: str):
-
     stack = ExitStack()
     payload = {"uid": uid, "email": f"{uid}@example.com"}
-    stack.enter_context(patch("app.routers.auth.verify_firebase_token", return_value=payload))
     stack.enter_context(patch("app.auth.dependencies.verify_firebase_token", return_value=payload))
     return stack
-
 
 def test_padre_se_registra_y_tiene_invite_code(client):
     with fake_auth("padre1"):
