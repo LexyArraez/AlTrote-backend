@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from app.models.enums import UserRole
 
 
@@ -18,8 +18,7 @@ class UserResponse(BaseModel):
     level: int
     points_balance: int
 
-class Config:
-    from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HouseholdResponse(BaseModel):
@@ -28,5 +27,4 @@ class HouseholdResponse(BaseModel):
     invite_code: str
     children: list[UserResponse]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

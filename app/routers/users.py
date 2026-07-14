@@ -1,6 +1,8 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 from app.auth.dependencies import get_current_user, require_role
+from app.database.db_connection import get_db
 from app.models.enums import UserRole
 from app.models.user import User
 from app.schemas.user import UserResponse, HouseholdResponse
@@ -12,14 +14,21 @@ router = APIRouter(prefix="/users", tags=["users"])
 def get_me(current_user: Annotated[User, Depends(get_current_user)]) -> User:
     return current_user
 
-
 @router.get("/household", response_model=HouseholdResponse)
 def get_my_household(
-    current_user: Annotated[User, Depends(require_role(UserRole.PADRE))],
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)]
 ):
-    household = current_user.owned_household
-    if household is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "No tienes un nucleo familiar creado")
+    if current_user.role == UserRole.PADRE:
+        household = current_user.owned_household
+    else:
+        household = current_user.household
+
+    if not household:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No estás asociado a ningún núcleo familiar"
+        )
     return household
 
 
