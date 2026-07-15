@@ -9,7 +9,7 @@ from app.core import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED,summary="Registrar un nuevo usuario")
 def register(
     data: UserRegister,
     payload: Annotated[dict, Depends(get_firebase_payload)],
