@@ -21,28 +21,27 @@ class Task(Base):
     title: Mapped[str] = mapped_column(String(150), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-
+    points_value: Mapped[int] = mapped_column(
+        default=10,
+        server_default="10"
+    )
     priority: Mapped[TaskPriority] = mapped_column(
         Enum(TaskPriority, name="task_priority"),
         nullable=False
     )
     frequency: Mapped[TaskFrequency] = mapped_column(
-        Enum(TaskFrequency, name="task_frequency"),
-        default=TaskFrequency.UNICA.value,
+        Enum(TaskFrequency, name="task_frequency", values_callable=lambda x: [e.value for e in x]),
+        default=TaskFrequency.UNICA,
         server_default=TaskFrequency.UNICA.value
     )
-    points_value: Mapped[int] = mapped_column(
-        default=10,
-        server_default="10"
-    )
     status: Mapped[TaskStatus] = mapped_column(
-        Enum(TaskStatus, name="task_status"),
+        Enum(TaskStatus, name="task_status", values_callable=lambda x: [e.value for e in x]),
         default=TaskStatus.PENDIENTE,
         server_default=TaskStatus.PENDIENTE.value
     )
 
 
-    household_id: Mapped[int] = mapped_column(ForeignKey("households.id", ondelete="CASCADE"))
+    household_id: Mapped[int] = mapped_column(ForeignKey("household.id", ondelete="CASCADE"))
     assigned_to_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 

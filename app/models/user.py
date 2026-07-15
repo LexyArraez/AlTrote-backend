@@ -9,6 +9,7 @@ from app.models.enums import TaskPriority, UserRole
 
 if TYPE_CHECKING:
     from app.models.household import Household
+    from app.models.task import Task
 
 
 class User(Base):
@@ -39,6 +40,15 @@ class User(Base):
         uselist=False
     )
 
+    assigned_tasks: Mapped[list["Task"]] = relationship(
+        foreign_keys="Task.assigned_to_id",
+        back_populates="assigned_to"
+    )
+    created_tasks: Mapped[list["Task"]] = relationship(
+        foreign_keys="Task.created_by_id",
+        back_populates="created_by"
+    )
+
     completed_tasks: Mapped[int] = mapped_column(default=0, server_default="0")
     level: Mapped[int] = mapped_column(default=1, server_default="1")
     tasks_toward_level: Mapped[int] = mapped_column(default=0, server_default="0")
@@ -64,10 +74,7 @@ class User(Base):
 
 
     def register_completed_task(self, priority: TaskPriority, task_points: int) -> bool:
-        """
-        Registra una tarea completada por el usuario.
-        Suma puntos y evalúa si sube de nivel (solo si cumple los requisitos de prioridad).
-        """
+
         if not self.is_child:
             raise ValueError("Solo los usuarios con rol 'Hijo' pueden acumular puntos.")
 

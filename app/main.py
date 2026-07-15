@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.exceptions import AppException
-from app.routers import auth, users
+from app.routers import auth, users, task
 
 
 app = FastAPI(
@@ -24,3 +24,4 @@ async def app_exception_handler(request: Request, exc: AppException):
 
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(task.router)

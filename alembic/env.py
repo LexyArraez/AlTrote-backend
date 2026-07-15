@@ -12,7 +12,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.core.config import settings  # noqa: E402
 from app.database.db_connection import Base  # noqa: E402
-from app.models import household, user  # noqa: E402,F401
+from app.models import household, user, task  # noqa: E402, F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

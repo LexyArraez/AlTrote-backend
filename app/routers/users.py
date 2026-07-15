@@ -10,11 +10,11 @@ from app.schemas.user import UserResponse, HouseholdResponse
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/me", response_model=UserResponse,summary="Obtener el perfil del usuario autenticado")
 def get_me(current_user: Annotated[User, Depends(get_current_user)]) -> User:
     return current_user
 
-@router.get("/household", response_model=HouseholdResponse)
+@router.get("/household", response_model=HouseholdResponse,summary="Obtener los detalles del hogar")
 def get_my_household(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)]
@@ -32,7 +32,7 @@ def get_my_household(
     return household
 
 
-@router.get("/household/children", response_model=list[UserResponse])
+@router.get("/household/children", response_model=list[UserResponse],summary="Listar los hijos vinculados al hogar")
 def list_my_children(
     current_user: Annotated[User, Depends(require_role(UserRole.PADRE))]
 ) -> list[User]:
