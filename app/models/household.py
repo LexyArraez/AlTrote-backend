@@ -9,6 +9,7 @@ from app.database.db_connection import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
+    from app.models.task import Task
 
 
 def generate_invite_code() -> str:
@@ -18,7 +19,7 @@ class Household(Base):
     __tablename__ = 'household'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
 
     invite_code: Mapped[str] = mapped_column(
         String(20), unique=True, default=generate_invite_code, index=True
@@ -36,4 +37,9 @@ class Household(Base):
     )
     children: Mapped[list["User"]] = relationship(
         back_populates="household", foreign_keys="User.household_id"
+    )
+
+    tasks: Mapped[list["Task"]] = relationship(
+        back_populates="household",
+        cascade="all, delete-orphan"
     )
