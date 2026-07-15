@@ -39,8 +39,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['household_id'], ['household.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.drop_index(op.f('ix_users_firebase_uid'), table_name='users')
-    op.create_index(op.f('ix_users_firebase_id'), 'users', ['firebase_id'], unique=True)
     # ### end Alembic commands ###
 
 
