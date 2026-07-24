@@ -62,7 +62,12 @@ class TaskNotPendingApproval(BadRequestError):
     """Evita que el padre intente aprobar tareas activas o ya cobradas."""
     detail = "La tarea no está en espera de aprobación por un adulto"
 
+class TaskNotYours(ForbiddenError):
+    detail = "Esta tarea no te pertenece"
 
+class TaskAlreadyCompleted(BadRequestError):
+    detail = "Esta tarea ya fue marcada como completada"
+    
 # --- HOGAR / FAMILIA ---
 
 class HouseholdNotFound(NotFoundError):
