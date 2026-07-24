@@ -1,10 +1,13 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.models.enums import UserRole
+from datetime import datetime, timezone
+from app.models.enums import UserRole, TaskStatus
 from app.models.task import Task
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate
 from app.core.task_validators import (obtener_household_del_padre,validar_hijo_pertenece_al_padre,verificar_pertenencia_tarea)
+from app.exceptions import TaskAlreadyCompleted, TaskNotYours
+
 
 def create_task(db: Session, data: TaskCreate, padre: User) -> Task:
     household_id = obtener_household_del_padre(padre)
@@ -42,11 +45,8 @@ def get_tasks_for_user(db: Session, current_user: User) -> list[Task]:
     return list(db.scalars(query).all())
 
 
-
-
 def update_task(db: Session, task: Task, data: TaskUpdate, padre: User) -> Task:
-    """Actualiza una tarea existente si pertenece al hogar del padre."""
-    # 1. Validaciones de negocio externas
+   
     household_id = obtener_household_del_padre(padre)
     verificar_pertenencia_tarea(task, household_id)
 
@@ -60,6 +60,26 @@ def update_task(db: Session, task: Task, data: TaskUpdate, padre: User) -> Task:
     db.commit()
     db.refresh(task)
     return task
+
+
+def complete_task(db: Session, task: Task, current_user: User) -> tuple[Task, bool]:
+
+    if task.assigned_to_id != current_user.id:
+        raise TaskNotYours()
+
+    if task.status == TaskStatus.COMPLETADA:
+        raise TaskAlreadyCompleted()
+
+    task.status = TaskStatus.COMPLETADA
+    task.completed_at = datetime.now(timezone.utc)
+
+    level_up = current_user.register_completed_task(task.priority, task.points_value)
+
+    db.commit()
+    db.refresh(task)
+    db.refresh(current_user)
+
+    return task, level_up
 
 
 def delete_task(db: Session, task: Task, padre: User) -> None:
