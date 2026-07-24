@@ -39,3 +39,13 @@ class TaskResponse(TaskBase):
     completed_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
+
+class TaskCompleteResponse(BaseModel):
+
+    task: TaskResponse
+    points_balance: int
+    level: int
+    level_up: bool
+
+    class Config:
+        from_attributes = True

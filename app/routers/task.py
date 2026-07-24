@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.database.db_connection import get_db
-from app.auth.dependencies import get_current_user
-
+from app.auth.dependencies import get_current_user, require_role
+from app.crud import task as task_crud
 from app.models.enums import UserRole
 from app.models.user import User
-from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
+from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse,TaskCompleteResponse
 from app.exceptions import TaskNotFound, TaskNotVisible, WrongRole
+
 
 from app.crud.task import (get_task,get_tasks_for_user,create_task,update_task,delete_task)
 
@@ -54,6 +55,27 @@ def api_get_task_by_id(
 
     return task
 
+@router.post("/{task_id}/complete", response_model=TaskCompleteResponse, summary="Marcar una tarea como completada (Solo Hijos)")
+def api_complete_task(
+        task_id: int,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    if current_user.role != UserRole.HIJO:
+        raise WrongRole(required_role=UserRole.HIJO.value)
+
+    task = get_task(db=db, task_id=task_id)
+    if not task:
+        raise TaskNotFound()
+
+    updated_task, level_up = task_crud.complete_task(db=db, task=task, current_user=current_user)
+
+    return {
+        "task": updated_task,
+        "points_balance": current_user.points_balance,
+        "level": current_user.level,
+        "level_up": level_up,
+    }
 
 @router.put("/{task_id}",response_model=TaskResponse,summary="Actualizar una tarea (Solo Padres)")
 def api_update_task(
